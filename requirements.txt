@@ -1,7 +1,7 @@
 streamlit
 torch==2.2.0
 opencv-python
-numpy
+numpy<2
 Pillow
 opencv-python-headless
 
