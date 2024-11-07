@@ -1,7 +1,7 @@
 # Recognizing posts with YOLOv5
 A Streamlit based application that allows character recognition based on the use of the YOLOv5 model. 
 The model was trained on a set of images, thanks to which it is equipped with the characteristics of selected characters from the "Captain Bomba" series. 
-The application is removable in the aftermath and once deployed can be used online via a link.
+The application is removable in the aftermath and once deployed can be used online via a link:https://bomba-kapitan.streamlit.app/
 
 ## Functionality
 * **Loading photos**: The user can have a photo in .jpg, .jpeg, .png format.
