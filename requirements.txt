@@ -4,3 +4,9 @@ opencv-python
 numpy<2
 Pillow
 opencv-python-headless
+
+torch
+torchvision
+ultralytics
+setuptools
+
