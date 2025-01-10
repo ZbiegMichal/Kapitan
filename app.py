@@ -8,26 +8,39 @@ from PIL import Image
 @st.cache_resource
 def load_model(model_path):
     try:
-        model = torch.hub.load('ultralytics/yolov5', 'custom', path=model_path, force_reload=True)
+        # Ładowanie modelu lokalnie z pliku .pt
+        model = torch.load(model_path, map_location=torch.device('cpu'))
+        model.eval()  # Ustawienie modelu w tryb oceny
         return model
+    except FileNotFoundError:
+        st.error("Nie znaleziono pliku modelu. Upewnij się, że plik 'best.pt' znajduje się w katalogu aplikacji.")
+        return None
     except Exception as e:
         st.error(f"Błąd podczas ładowania modelu: {e}")
         return None
 
 # Funkcja do rozpoznawania postaci
 def detect_characters(image, model):
-    # Konwertuj obraz do rozmiaru 416x416 pikseli, zachowując proporcje
-    img_resized = np.array(image.resize((416, 416)))
+    # Konwertuj obraz na format akceptowany przez model
+    img_resized = np.array(image.resize((640, 640)))  # Dopasowanie do wymaganego rozmiaru
+    img = img_resized / 255.0  # Normalizacja
+    img = np.transpose(img, (2, 0, 1))  # Przekształcenie na format CHW
+    img = torch.tensor(img, dtype=torch.float32).unsqueeze(0)  # Dodanie wymiaru batch
     
     # Wykonaj detekcję
-    results = model(img_resized)
+    with torch.no_grad():
+        results = model(img)
     
     # Przetwórz wyniki
-    detections = results.pred[0].cpu().numpy()  # Zapewnij zgodność z CPU
-    img_drawn = img_resized.copy()  # Kopia obrazu dla rysowania
+    detections = results[0]  # Wyniki detekcji
+    img_drawn = np.array(image).copy()  # Kopia obrazu dla rysowania
     
-    for *box, conf, cls in detections:
-        label = f'{model.names[int(cls)]} {conf:.2f}'
+    for det in detections:
+        box = det[:4].cpu().numpy()  # Współrzędne ramki
+        conf = det[4].item()  # Pewność predykcji
+        cls = int(det[5].item())  # Klasa
+        
+        label = f'{model.names[cls]} {conf:.2f}'
         color = (0, 255, 0)  # Zielona ramka i tekst
         cv2.rectangle(img_drawn, (int(box[0]), int(box[1])), (int(box[2]), int(box[3])), color, 2)
         cv2.putText(img_drawn, label, (int(box[0]), int(box[1]) - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
