@@ -18,14 +18,14 @@ def load_model(model_path):
 def detect_characters(image, model):
     # Konwertuj obraz do rozmiaru 416x416 pikseli, zachowując proporcje
     img_resized = np.array(image.resize((416, 416)))
-
+    
     # Wykonaj detekcję
     results = model(img_resized)
-
+    
     # Przetwórz wyniki
     detections = results.pred[0].cpu().numpy()  # Zapewnij zgodność z CPU
     img_drawn = img_resized.copy()  # Kopia obrazu dla rysowania
-
+    
     for *box, conf, cls in detections:
         label = f'{model.names[int(cls)]} {conf:.2f}'
         color = (0, 255, 0)  # Zielona ramka i tekst
@@ -52,14 +52,20 @@ uploaded_file = st.file_uploader("Wybierz zdjęcie", type=["jpg", "jpeg", "png"]
 if uploaded_file is not None:
     # Wyświetl przesłane zdjęcie
     image = Image.open(uploaded_file)
-    st.image(image, caption="Przesłane zdjęcie", use_container_width=True)
+    st.image(image, caption="Przesłane zdjęcie", use_column_width=True)
 
     # Wczytaj model
     model_path = 'best.pt'
+    model = load_model(model_path)
 
-
+    if model:
+        # Rozpoznawanie postaci
+        with st.spinner("Rozpoznawanie postaci..."):
+            detected_image = detect_characters(image, model)
+        
         # Wyświetl wyniki w osobnej sekcji
         st.markdown("## Wynik rozpoznawania")
-        st.image(detected_image, caption="Wynik rozpoznawania", use_container_width=True)
+        st.image(detected_image, caption="Wynik rozpoznawania", use_column_width=True)
     else:
         st.error("Nie można wykonać rozpoznawania, ponieważ model nie został załadowany.")
+        
