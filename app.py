@@ -52,7 +52,7 @@ uploaded_file = st.file_uploader("Wybierz zdjęcie", type=["jpg", "jpeg", "png"]
 if uploaded_file is not None:
     # Wyświetl przesłane zdjęcie
     image = Image.open(uploaded_file)
-    st.image(image, caption="Przesłane zdjęcie", use_column_width=True)
+    st.image(image, caption="Przesłane zdjęcie",use_container_width=True)
 
     # Wczytaj model
     model_path = 'best.pt'
@@ -65,7 +65,7 @@ if uploaded_file is not None:
         
         # Wyświetl wyniki w osobnej sekcji
         st.markdown("## Wynik rozpoznawania")
-        st.image(detected_image, caption="Wynik rozpoznawania", use_column_width=True)
+        st.image(detected_image, caption="Wynik rozpoznawania", use_container_width=True)
     else:
         st.error("Nie można wykonać rozpoznawania, ponieważ model nie został załadowany.")
         
