@@ -3,7 +3,7 @@ torch==2.2.0
 opencv-python-headless
 numpy<2
 Pillow
-
+git+https://github.com/ultralytics/yolov5.git
 
 torch
 torchvision
